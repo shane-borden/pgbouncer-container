@@ -56,6 +56,7 @@ RUN make install
 # Buildup runtime container
 FROM debian:bookworm-slim
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install  -o Dpkg::Options::=--force-confdef -yq --no-install-recommends git \
         busybox \
         libudns0 \
