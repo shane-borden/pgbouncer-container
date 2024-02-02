@@ -1,0 +1,19 @@
+apiVersion: v2
+name: google-pgbouncer
+description: A Helm chart for deploying pgBouncer on Google Kubernetes Engine.  Based on chart published at icoretech.github.io/helm/charts/pgbouncer
+type: application
+version: 0.1.0
+appVersion: 1.22.0
+kubeVersion: ">= 1.28.3-gke.1286000"
+keywords:
+  - pgBouncer
+  - PostgreSQL
+  - Kubernetes
+home: https://github.com/GoogleCloudPlatform
+sources:
+  - https://github.com/GoogleCloudPlatform/google-pgbouncer
+annotations:
+  artifacthub.io/license: "Apache-2.0"
+  artifacthub.io/category: "database"
+  artifacthub.io/changes: |
+    - Initial Version

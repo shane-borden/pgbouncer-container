@@ -105,4 +105,4 @@ WORKDIR /etc/pgbouncer
 
 USER postgres
 EXPOSE 5432
-CMD ["/usr/bin/pgbouncer", "/etc/pgbouncer/pgbouncer.ini"]
+CMD ["/usr/bin/pgbouncer", "/etc/pgbouncer/pgbouncer.ini", "2>&1"]

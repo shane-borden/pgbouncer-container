@@ -1,0 +1,280 @@
+# Default values for google-pgbouncer.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+## Replica count for Deployment
+## https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.21/#deploymentspec-v1-apps
+##
+replicaCount: 1
+
+## The update strategy to apply to the Deployment
+## https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.21/#deploymentstrategy-v1-apps
+##
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
+    maxSurge: 25%
+
+## Interval between discrete pods transitions
+## https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.21/#deploymentspec-v1-apps
+##
+minReadySeconds: 0
+
+## Rollback limit
+## https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.21/#deploymentspec-v1-apps
+##
+revisionHistoryLimit: 10
+
+## Optional array of imagePullSecrets containing private registry credentials
+## https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+##
+imagePullSecrets: []
+# - name: "image-pull-secret"
+
+## Container image to run
+## https://kubernetes.io/docs/concepts/containers/images/
+##
+image:
+  registry: ""
+  repository: us-central1-docker.pkg.dev/db-black-belts-playground-01/pgbouncer-docker/pgbouncer
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "1.22.0"
+
+## Service configuration
+## https://kubernetes.io/docs/concepts/services-networking/service/
+##
+service:
+  type: ClusterIP
+  port: 5432
+
+## Labels to add to the pod metadata
+## key: value
+##
+podLabels: {}
+
+## Annotations to add to the pod metadata
+##
+podAnnotations: {}
+# prometheus.io/scrape: true
+# prometheus.io/port: "{{ .Values.pgbouncerExporter.port }}"
+
+## Additional environment variables to set
+##
+extraEnvs: []
+# - name: FOO
+#   value: FOO
+# - name: BAR
+#   valueFrom:
+#     secretKeyRef:
+#       key: BAR
+#       name: bar-secret
+
+## Pod resources for scheduling/limiting
+## https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+## We usually recommend not to specify default resources and to leave this as a conscious
+## choice for the user. This also increases chances charts run on environments with little
+## resources, such as Minikube. If you do want to specify resources, uncomment the following
+## lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+##
+##resources: {}
+resources:
+  requests:
+    cpu: "2000m"
+    ephemeral-storage: "1Gi"
+    memory: "4Gi"
+  limits:
+    cpu: "2000m"
+    ephemeral-storage: "1Gi"
+    memory: "4Gi"
+
+## Node labels for pod assignment
+## https://kubernetes.io/docs/user-guide/node-selection/
+##
+nodeSelector:
+  cloud.google.com/compute-class: "Balanced"
+
+## Lifecycle hooks
+## https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/
+##
+lifecycle: {}
+
+## Tolerations for pod assignment
+## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+##
+tolerations: []
+# - key: "key"
+#   operator: "Equal|Exists"
+#   value: "value"
+#   effect: "NoSchedule|PreferNoSchedule"
+
+## Affinity and anti-affinity
+## https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+##
+affinity: {}
+# podAntiAffinity:
+#   preferredDuringSchedulingIgnoredDuringExecution:
+#   - weight: 100
+#     podAffinityTerm:
+#       labelSelector:
+#         matchExpressions:
+#         - key: app.kubernetes.io/name
+#           operator: In
+#           values:
+#           - pgbouncer
+#         - key: app.kubernetes.io/instance
+#           operator: In
+#           values:
+#           - pgbouncer
+#       topologyKey: kubernetes.io/hostname
+# podAntiAffinity:
+#   requiredDuringSchedulingIgnoredDuringExecution:
+#   - labelSelector:
+#       matchExpressions:
+#       - key: app.kubernetes.io/name
+#         operator: In
+#         values:
+#         - pgbouncer
+#       - key: app.kubernetes.io/instance
+#         operator: In
+#         values:
+#         - pgbouncer
+#     topologyKey: "kubernetes.io/hostname"
+
+## Priority of pods
+## https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/
+##
+priorityClassName: ""
+
+## Runtime class for pods
+## https://kubernetes.io/docs/concepts/containers/runtime-class/
+##
+runtimeClassName: ""
+
+## pgBouncer Settings
+## https://www.pgbouncer.org/config.html
+## 
+## place all configuration items here config
+##
+config:
+  adminUser: admin
+  adminPassword: Google54321
+  authUser: admin
+  authPassword: Google54321
+  listen_addr: "*"
+  listen_port: 5432
+  databases:
+    postgres:
+      host: 10.3.1.17
+      port: 5432
+  pgbouncer:
+    auth_type: md5
+    auth_query: SELECT p_user, p_password FROM public.lookup($1)
+    pool_mode: transaction
+    max_client_conn: 7500
+    min_pool_size: 25
+    default_pool_size: 50
+    reserve_pool_size: 25
+    client_tls_sslmode: disable
+    server_tls_sslmode: prefer
+    ignore_startup_parameters: extra_float_digits
+    max_prepared_statements: 200
+  userlist:
+    postgres: "SCRAM-SHA-256$4096:wIiyxsACoIe3lyFlM8vqMgdFvE+FtmXhe1pBkH/Mkt4=$DB2aQSCTgL03/buI1oYt7MbrWK5tF1rYSx8/0MdQvhc=:H3nYnTbcuo6Bq6I2Fxj6BH/FUIM+VkIRXmy8o6qQrg8="
+
+## pgBouncer Exporter container image and configuration
+##
+pgbouncerExporter:
+  enabled: false
+  port: 9127
+  image:
+    registry: ""
+    repository: prometheuscommunity/pgbouncer-exporter
+    tag: v0.7.0
+    pullPolicy: IfNotPresent
+  log:
+    level: info # or debug, warn, error
+    format: logfmt # or json
+  resources:
+    limits:
+      cpu: 250m
+      memory: 150Mi
+    requests:
+      cpu: 30m
+      memory: 40Mi
+
+## Additional containers to be added to the pods
+##
+extraContainers: []
+# - name: some-container
+#   image: some/image:latest
+#   env:
+#   - name: FOO
+#     value: "123"
+#   volumeMounts:
+#   - name: bar-volume
+#     mountPath: /mnt
+
+## Containers, which are run before the app containers are started
+##
+extraInitContainers: []
+# - name: init
+#   image: busybox
+#   command: ['sh', '-c', 'until nslookup myservice; do echo waiting for myservice; sleep 2; done;']
+
+## Additional volumeMounts to the main container
+##
+extraVolumeMounts: []
+# - name: something
+#   mountPath: /mnt/something
+
+## Additional volumes to the pods
+##
+extraVolumes: []
+# - name: something
+#   emptyDir: {}
+
+## Pod Disruption Budget
+## https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+##
+podDisruptionBudget:
+  ## if a PodDisruptionBudget resource is created for the pgbouncer Deployment
+  ##
+  enabled: false
+
+  ## the maximum unavailable pods/percentage for the pgbouncer Deployment
+  ##
+  maxUnavailable:
+
+  ## the minimum available pods/percentage for the pgbouncer Deployment
+  ##
+  minAvailable:
+
+## Service Account for pods
+## https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+##
+serviceAccount:
+  ## Creates new ServiceAccount if empty string
+  ##
+  name: cloudsql-k8s-sa
+  ## Annotations for created ServiceAccount
+  ##
+  annotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+## nameOverride replaces the name of the chart in the Chart.yaml
+## fullnameOverride completely replaces the generated name
+##
+nameOverride: ""
+fullnameOverride: ""
