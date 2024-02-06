@@ -98,11 +98,20 @@ RUN groupadd --gid $USER_GID $USERNAME \
 # Copy necessary files from builder stage
 COPY --from=builder /usr/bin/pgbouncer /usr/bin/
 
-# Setup directories
+# Copy startup script
+COPY startupBouncer.sh /usr/bin/startupBouncer.sh
+
+# Setup directories and startup files
 RUN mkdir -p /etc/pgbouncer /var/log/pgbouncer /var/run/pgbouncer && chown -R postgres /var/run/pgbouncer /etc/pgbouncer
+RUN chown postgres:postgres /usr/bin/startupBouncer.sh && chmod 755 /usr/bin/startupBouncer.sh
 
 WORKDIR /etc/pgbouncer
 
 USER postgres
 EXPOSE 5432
-CMD ["/usr/bin/pgbouncer", "/etc/pgbouncer/pgbouncer.ini", "2>&1"]
+
+# To enter bouncer startup without stderr redirect
+#CMD ["/usr/bin/pgbouncer", "/etc/pgbouncer/pgbouncer.ini"]
+
+# To enter bouncer startup with stderr redirect
+CMD ["/usr/bin/startupBouncer.sh"]
