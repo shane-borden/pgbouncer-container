@@ -154,18 +154,21 @@ runtimeClassName: ""
 
 ## pgBouncer Settings
 ## https://www.pgbouncer.org/config.html
-## 
+##
 ## place all configuration items here config
 ##
 config:
   adminUser: admin
   adminPassword: Google54321
-  authUser: admin
+  authUser: postgres
   authPassword: Google54321
   listen_addr: "*"
   listen_port: 5432
   databases:
     postgres:
+      host: 10.3.1.17
+      port: 5432
+    tpcc:
       host: 10.3.1.17
       port: 5432
   pgbouncer:
@@ -278,3 +281,8 @@ securityContext: {}
 ##
 nameOverride: ""
 fullnameOverride: ""
+
+## Load Balancer Name used to balance between pods
+## loadBalancerName used for the internal load balancer service
+##
+loadBalancerName: "gcp-bouncer-ilb"

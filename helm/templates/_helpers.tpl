@@ -31,6 +31,13 @@ Create chart name and version as used by the chart label.
 {{- end }}
 
 {{/*
+Create internal load balancer name.
+*/}}
+{{- define "google-pgbouncer.ilb.name" -}}
+{{- default "gcp-gke-bouncer-ilb" .Values.loadBalancerName | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
 Create content for userlist.txt secret
 */}}
 {{- define "google-pgbouncer.secret.userlist" }}

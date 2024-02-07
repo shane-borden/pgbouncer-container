@@ -109,9 +109,5 @@ WORKDIR /etc/pgbouncer
 
 USER postgres
 EXPOSE 5432
-
-# To enter bouncer startup without stderr redirect
 #CMD ["/usr/bin/pgbouncer", "/etc/pgbouncer/pgbouncer.ini"]
-
-# To enter bouncer startup with stderr redirect
 CMD ["/usr/bin/startupBouncer.sh"]
