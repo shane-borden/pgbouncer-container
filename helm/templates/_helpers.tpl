@@ -34,19 +34,25 @@ Create chart name and version as used by the chart label.
 Create internal load balancer name.
 */}}
 {{- define "google-pgbouncer.ilb.name" -}}
-{{- default "gcp-gke-bouncer-ilb" .Values.loadBalancerName | trunc 63 | trimSuffix "-" }}
+{{- default "gcp-gke-bouncer-ilb" .Values.gkeLoadBalancer.loadBalancerName | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Create content for userlist.txt secret
 */}}
 {{- define "google-pgbouncer.secret.userlist" }}
+{{ $sameUserCounter := 0 | int }}
 "{{ .Values.config.adminUser }}" "{{ required "A valid .Values.config.adminPassword entry required!" .Values.config.adminPassword }}"
-{{- if .Values.config.authUser }}
-"{{ .Values.config.authUser }}" "{{ required "A valid .Values.config.authPassword entry required!" .Values.config.authPassword }}"
-{{- end }}
 {{- range $key, $val := .Values.config.userlist }}
+{{- if not (eq $.Values.config.authUser $key) }}
 "{{ $key }}" "{{ $val }}"
+{{- else }}
+"{{ $key }}" "{{ $val }}"
+{{ $sameUserCounter = add 1 $sameUserCounter }}
+{{- end }}
+{{- end }}
+{{- if and ($.Values.config.authUser) (eq $sameUserCounter 0) }}
+"{{ .Values.config.authUser }}" "{{ required "A valid .Values.config.authPassword entry required!" .Values.config.authPassword }}"
 {{- end }}
 {{- end }}
 

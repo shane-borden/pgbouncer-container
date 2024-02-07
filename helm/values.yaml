@@ -160,7 +160,7 @@ runtimeClassName: ""
 config:
   adminUser: admin
   adminPassword: Google54321
-  authUser: postgres
+  authUser: pgbouncerAuth
   authPassword: Google54321
   listen_addr: "*"
   listen_port: 5432
@@ -285,4 +285,6 @@ fullnameOverride: ""
 ## Load Balancer Name used to balance between pods
 ## loadBalancerName used for the internal load balancer service
 ##
-loadBalancerName: "gcp-bouncer-ilb"
+gkeLoadBalancer:
+  enabled: false
+  loadBalancerName: "gcp-bouncer-ilb"
