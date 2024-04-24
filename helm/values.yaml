@@ -288,5 +288,5 @@ fullnameOverride: ""
 ## loadBalancerName used for the internal load balancer service
 ##
 gkeLoadBalancer:
-  enabled: false
+  enabled: true
   loadBalancerName: "gcp-pgbouncer-ilb"
