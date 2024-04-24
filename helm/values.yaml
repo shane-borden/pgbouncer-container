@@ -5,7 +5,7 @@
 ## Replica count for Deployment
 ## https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.21/#deploymentspec-v1-apps
 ##
-replicaCount: 1
+replicaCount: 2
 
 ## The update strategy to apply to the Deployment
 ## https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.21/#deploymentstrategy-v1-apps
@@ -156,14 +156,12 @@ runtimeClassName: ""
 ## https://www.pgbouncer.org/config.html
 ##
 ## place all configuration items here config
-## userlist tag should be in the format:
-## username: "Result from query: SELECT usename, passwd FROM pg_shadow WHERE usename = username"
 ##
 config:
-  adminUser: admin
-  adminPassword: Google54321
-  authUser: pgbouncerAuth
-  authPassword: Google54321
+  adminUser: pgbouncerAdmin
+  adminPassword: "Google54321!"
+  authUser: pgbouncer_auth_user
+  authPassword: Google543211
   listen_addr: "*"
   listen_port: 5432
   databases:
@@ -178,15 +176,25 @@ config:
     auth_query: SELECT p_user, p_password FROM public.lookup($1)
     pool_mode: transaction
     max_client_conn: 7500
-    min_pool_size: 25
-    default_pool_size: 50
-    reserve_pool_size: 25
+    min_pool_size: 15
+    default_pool_size: 20
+    reserve_pool_size: 10
+    reserve_pool_timeout: 3
+    server_lifetime: 300
+    server_idle_timeout: 600
+    server_connect_timeout: 5
+    server_login_retry: 1
+    query_wait_timeout: 60
+    client_idle_timeout: 600
+    client_login_timeout: 60
     client_tls_sslmode: disable
     server_tls_sslmode: prefer
     ignore_startup_parameters: extra_float_digits
+    track_extra_parameters: search_path,IntervalStyle
     max_prepared_statements: 200
+    application_name_add_host: 1
   userlist:
-    test_user: "SCRAM-SHA-256$4096:nSlrKdxBzdPc9/yvDz14NA==$zZurP2yhnJkz52W3IOWcQEGP/jrGMTrnMfEaTJy90BU=:kPcetkx6tjHhC7rrfzpwhLpIRMdQ8Biz1vcWaUkGP0A="
+    test_user: "SCRAM-SHA-256$4096:wIiyxsACoIe3lyFlM8vqMgdFvE+FtmXhe1pBkH/Mkt4=$DB2aQSCTgL03/buI1oYt7MbrWK5tF1rYSx8/0MdQvhc=:H3nYnTbcuo6Bq6I2Fxj6BH/FUIM+VkIRXmy8o6qQrg8="
 
 ## pgBouncer Exporter container image and configuration
 ##
