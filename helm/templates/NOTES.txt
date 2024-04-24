@@ -4,6 +4,10 @@ The current installed release is named {{ .Release.Name }}.
 
 The pgbouncer service name is {{ .Release.Name }}-{{ .Chart.Name }}.
 
+{{- if .Values.gkeLoadBalancer.enabled }}
+The pgbouncer internal load balancer service name is {{ include "google-pgbouncer.ilb.name" . }}.
+{{- end }}
+
 To learn more about the release, try:
 
   $ helm status {{ .Release.Name }}
