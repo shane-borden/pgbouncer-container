@@ -40,7 +40,7 @@ image:
   repository: us-central1-docker.pkg.dev/db-black-belts-playground-01/pgbouncer-docker/pgbouncer
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "1.22.0"
+  tag: "1.22.1"
 
 ## Service configuration
 ## https://kubernetes.io/docs/concepts/services-networking/service/
@@ -156,6 +156,8 @@ runtimeClassName: ""
 ## https://www.pgbouncer.org/config.html
 ##
 ## place all configuration items here config
+## userlist tag should be in the format:
+## username: "Result from query: SELECT usename, passwd FROM pg_shadow WHERE usename = username"
 ##
 config:
   adminUser: admin
@@ -184,17 +186,17 @@ config:
     ignore_startup_parameters: extra_float_digits
     max_prepared_statements: 200
   userlist:
-    postgres: "SCRAM-SHA-256$4096:wIiyxsACoIe3lyFlM8vqMgdFvE+FtmXhe1pBkH/Mkt4=$DB2aQSCTgL03/buI1oYt7MbrWK5tF1rYSx8/0MdQvhc=:H3nYnTbcuo6Bq6I2Fxj6BH/FUIM+VkIRXmy8o6qQrg8="
+    test_user: "SCRAM-SHA-256$4096:nSlrKdxBzdPc9/yvDz14NA==$zZurP2yhnJkz52W3IOWcQEGP/jrGMTrnMfEaTJy90BU=:kPcetkx6tjHhC7rrfzpwhLpIRMdQ8Biz1vcWaUkGP0A="
 
 ## pgBouncer Exporter container image and configuration
 ##
 pgbouncerExporter:
-  enabled: false
+  enabled: true
   port: 9127
   image:
     registry: ""
     repository: prometheuscommunity/pgbouncer-exporter
-    tag: v0.7.0
+    tag: v0.8.0
     pullPolicy: IfNotPresent
   log:
     level: info # or debug, warn, error
@@ -287,4 +289,4 @@ fullnameOverride: ""
 ##
 gkeLoadBalancer:
   enabled: false
-  loadBalancerName: "gcp-bouncer-ilb"
+  loadBalancerName: "gcp-pgbouncer-ilb"
