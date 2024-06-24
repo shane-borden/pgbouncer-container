@@ -1,4 +1,4 @@
-# docker build -t pgbouncer-container:1.22.0 --build-arg REPO_TAG=1.22.0 .
+# docker build -t pgbouncer-container:1.22.1 --build-arg REPO_TAG=1.22.1 .
 # This image is made to work with the related gke helm chart.
 # no config files exist because they are modified later
 
@@ -59,6 +59,8 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install  -o Dpkg::Options::=--force-confdef -yq --no-install-recommends git \
         libevent-dev \
+        #lsb-release \
+        #software-properties-common \
     # Clean up layer
     && apt-get autoremove -y \
     && apt-get clean -y \
@@ -69,6 +71,8 @@ RUN apt-get update \
     && rm -rf /var/apt/lists/* \
     && rm -rf /var/cache/apt/* \
     && truncate -s 0 /var/log/*log
+#RUN add-apt-repository "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main"
+#RUN apt-get install -o Dpkg::Options::=--force-confdef -yq --no-install-recommends postgresql-client-15
 
 # Create non-root user
 ARG USERNAME=postgres
@@ -99,5 +103,5 @@ WORKDIR /etc/pgbouncer
 
 USER postgres
 EXPOSE 5432
-
+#CMD ["/usr/bin/pgbouncer", "/etc/pgbouncer/pgbouncer.ini"]
 CMD ["/usr/bin/startupBouncer.sh"]

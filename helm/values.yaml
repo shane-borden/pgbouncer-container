@@ -19,7 +19,7 @@ updateStrategy:
 ## Interval between discrete pods transitions
 ## https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.21/#deploymentspec-v1-apps
 ##
-minReadySeconds: 0
+minReadySeconds: 15
 
 ## Rollback limit
 ## https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.21/#deploymentspec-v1-apps
@@ -158,8 +158,8 @@ runtimeClassName: ""
 ## place all configuration items here config
 ##
 config:
-  adminUser: pgbouncerAdmin
-  adminPassword: "Google54321!"
+  adminUser: pgbouncer_meta_user
+  adminPassword: Google5432111
   authUser: pgbouncer_auth_user
   authPassword: Google543211
   listen_addr: "*"
@@ -176,25 +176,19 @@ config:
     auth_query: SELECT p_user, p_password FROM public.lookup($1)
     pool_mode: transaction
     max_client_conn: 7500
-    min_pool_size: 15
-    default_pool_size: 20
-    reserve_pool_size: 10
-    reserve_pool_timeout: 3
-    server_lifetime: 300
-    server_idle_timeout: 600
+    min_pool_size: 10
+    default_pool_size: 25
+    reserve_pool_size: 25
     server_connect_timeout: 5
-    server_login_retry: 1
-    query_wait_timeout: 60
-    client_idle_timeout: 600
-    client_login_timeout: 60
     client_tls_sslmode: disable
     server_tls_sslmode: prefer
     ignore_startup_parameters: extra_float_digits
-    track_extra_parameters: search_path,IntervalStyle
+    track_extra_parameters: search_path, IntervalStyle
     max_prepared_statements: 200
+    max_db_connections: 50
     application_name_add_host: 1
   userlist:
-    test_user: "SCRAM-SHA-256$4096:wIiyxsACoIe3lyFlM8vqMgdFvE+FtmXhe1pBkH/Mkt4=$DB2aQSCTgL03/buI1oYt7MbrWK5tF1rYSx8/0MdQvhc=:H3nYnTbcuo6Bq6I2Fxj6BH/FUIM+VkIRXmy8o6qQrg8="
+    postgres: "SCRAM-SHA-256$4096:nqaBsoznGf+FRVi3xmCA7A==$XM/qQuRMQbzYjzAeuwh1BzQvqh4ID2vnO3Z+IzRtGJk=:D0zUsSbq34xgXNR7bvIs3N737CcFc1xcDJxuWfF0JbU="
 
 ## pgBouncer Exporter container image and configuration
 ##
@@ -297,4 +291,4 @@ fullnameOverride: ""
 ##
 gkeLoadBalancer:
   enabled: true
-  loadBalancerName: "gcp-pgbouncer-ilb"
+  loadBalancerName: "gcp-bouncer-ilb"
