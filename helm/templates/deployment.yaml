@@ -77,13 +77,17 @@ spec:
         readinessProbe:
           tcpSocket:
             port: {{ .Values.service.port }}
-          initialDelaySeconds: 10
-          periodSeconds: 5
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 5
         livenessProbe:
           tcpSocket:
             port: {{ .Values.service.port }}
           initialDelaySeconds: 60
-          periodSeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 5
         {{- if .Values.resources }}
         resources: {{ toYaml .Values.resources | trimSuffix "\n" | nindent 10 }}
         {{- end }}
