@@ -58,15 +58,9 @@ FROM debian:bookworm-slim
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install  -o Dpkg::Options::=--force-confdef -yq --no-install-recommends git \
-        busybox \
-        libudns0 \
-        udns-utils \
         libevent-dev \
-        tini \
-        procps \
-        wget \
-        lsb-release \
-        software-properties-common \
+        #lsb-release \
+        #software-properties-common \
     # Clean up layer
     && apt-get autoremove -y \
     && apt-get clean -y \
@@ -77,8 +71,8 @@ RUN apt-get update \
     && rm -rf /var/apt/lists/* \
     && rm -rf /var/cache/apt/* \
     && truncate -s 0 /var/log/*log
-RUN add-apt-repository "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main"
-RUN apt-get install -o Dpkg::Options::=--force-confdef -yq --no-install-recommends postgresql-client-15
+#RUN add-apt-repository "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main"
+#RUN apt-get install -o Dpkg::Options::=--force-confdef -yq --no-install-recommends postgresql-client-15
 
 # Create non-root user
 ARG USERNAME=postgres

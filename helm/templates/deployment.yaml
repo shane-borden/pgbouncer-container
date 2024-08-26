@@ -96,7 +96,7 @@ spec:
         {{ toYaml .Values.extraVolumeMounts | trimSuffix "\n" | nindent 8 }}
         {{- end }}
       {{- if .Values.pgbouncerExporter.enabled }}
-      - name: exporter
+      - name: gcp-pgbexporter
         image: {{ template "google-pgbouncer.exporterImage" . }}
         imagePullPolicy: {{ .Values.pgbouncerExporter.image.pullPolicy }}
         args:
@@ -120,7 +120,7 @@ spec:
         resources: {{ toYaml .Values.pgbouncerExporter.resources | trimSuffix "\n" | nindent 10 }}
         {{- end }}
         ports:
-        - name: exporter
+        - name: gcp-pgbexporter
           containerPort: {{ .Values.pgbouncerExporter.port }}
           protocol: TCP
       {{- end }}
