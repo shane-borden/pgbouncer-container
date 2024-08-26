@@ -292,4 +292,4 @@ fullnameOverride: ""
 ##
 gkeLoadBalancer:
   enabled: true
-  loadBalancerName: "gcp-bouncer-ilb"
+  loadBalancerName: "pgBouncer-ilb"
