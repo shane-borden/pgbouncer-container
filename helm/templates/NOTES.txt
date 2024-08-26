@@ -5,7 +5,7 @@ The current installed release is named {{ .Release.Name }}.
 The pgbouncer service name is {{ .Release.Name }}-{{ .Chart.Name }}.
 
 {{- if .Values.gkeLoadBalancer.enabled }}
-The pgbouncer internal load balancer service name is {{ include "google-pgbouncer.ilb.name" . }}.
+The pgbouncer internal load balancer service name is {{ include "pgbouncer-container.ilb.name" . }}.
 {{- end }}
 
 To learn more about the release, try:
@@ -19,13 +19,13 @@ To learn more about the release, try:
 {{- if .Values.gkeLoadBalancer.enabled }}
     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
         You can watch the status of by running:
-            kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "google-pgbouncer.ilb.name" . }}'
+            kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "pgbouncer-container.ilb.name" . }}'
         You can get the load balancer IP address by running:
-            kubectl get svc --namespace {{ .Release.Namespace }} {{ include "google-pgbouncer.ilb.name" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}"
+            kubectl get svc --namespace {{ .Release.Namespace }} {{ include "pgbouncer-container.ilb.name" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}"
 {{- end }}
 {{- if contains "ClusterIP" .Values.service.type }}
     NOTE: As the service builds up it may take a few minutes for the pods to become available
         You can check the status of the pods by running:
-            kubectl get pods --namespace pgb-namespace -l "app.kubernetes.io/name=gcp-pgbouncer,app.kubernetes.io/instance=gke-bouncer" \
+            kubectl get pods --namespace pgb-namespace -l "app.kubernetes.io/name=pgbouncer-container,app.kubernetes.io/instance=gke-bouncer" \
             -o jsonpath='{range .items[*]}{"Pod: ("}{@.metadata.name}{") IP Address: ("}{@.status.podIP}{"/"}{.spec.containers[0].ports[0].containerPort}{") Image: ("}{@.spec.containers[].image}{")\n"}{end}'
 {{- end }}

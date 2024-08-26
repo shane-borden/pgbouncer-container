@@ -1,4 +1,6 @@
-# docker build -t pgbouncer-container:1.22.1 --build-arg REPO_TAG=1.22.1 .
+# Ensure that the REPO_TAG matches what build of pgbouncer you want to use from this repo:
+#         https://github.com/pgbouncer/pgbouncer
+# docker build -t pgbouncer-container:1.23.1 --build-arg REPO_TAG=1.23.1 .
 # This image is made to work with the related gke helm chart.
 # no config files exist because they are modified later
 
@@ -54,6 +56,7 @@ RUN make
 RUN make install
 
 # Buildup runtime container
+# Can uncomment below if you want to have psql present in the container for debugging purposes
 FROM debian:bookworm-slim
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -101,6 +104,7 @@ RUN chown postgres:postgres /usr/bin/startupBouncer.sh && chmod 755 /usr/bin/sta
 
 WORKDIR /etc/pgbouncer
 
+# Must adjust the below EXPOSE parameter for the planned pgbouncer runtime port ({ listen_port } specified in the values.yaml ) in the POD
 USER postgres
 EXPOSE 5432
 #CMD ["/usr/bin/pgbouncer", "/etc/pgbouncer/pgbouncer.ini"]

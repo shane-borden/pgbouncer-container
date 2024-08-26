@@ -18,7 +18,7 @@ Builds 1 .. N pods containing a pgBouncer instance.  By default the installation
 ### Docker Build
 
 To build a docker image:
-- docker build -t pgbouncer:1.22.1 -t pgbouncer:latest --build-arg REPO_TAG=1.22.1 --no-cache .
+- docker build -t pgbouncer:1.23.1 -t pgbouncer:latest --build-arg REPO_TAG=1.23.1 --no-cache .
 
 Tag the image for upload to a common image repository (if necessary):
  - docker tag [IMAGE ID] [repo url]:[tag]
@@ -30,6 +30,9 @@ Push the images to the central repository (if necessary):
 List the artifacts.  For example, in GCP:
  - gcloud artifacts docker images list [repo url] --include-tags
 
+Update the values.yaml (images.repository) with the proper docker repository.  For example in GCP my docker repo is:
+ - us-central1-docker.pkg.dev/db-black-belts-playground-01/pgbouncer-docker/pgbouncer
+
 ### Prepare the Postgres Database
 
 Create a user to be used by pgBouncer for authentication.  This user will only have permissions to read the pg_shadow table via a function.
@@ -40,7 +43,8 @@ Create a user to be used by pgBouncer for authentication.  This user will only h
    - alter user pgbouncer_auth_user with NOCREATEDB;
    - revoke alloydbsuperuser from pgbouncer_auth_user; (if using AlloyDB)
    - grant create on schema public to pgbouncer_auth_user;
- - In the console set the flag `alloydb.pg_shadow_select_role` to the newly created `pgbouncer_auth_user`
+ - In the console set the flag `alloydb.pg_shadow_select_role` to the newly created `pgbouncer_auth_user` (if AlloyDB is being used)
+ - In the console set the flag `cloudsql.pg_shadow_select_role` to the newly created `pgbouncer_auth_user` (if CloudSQL is bing used)
  - Create the following function:
     ```
     CREATE OR REPLACE FUNCTION public.lookup(INOUT p_user name, OUT p_password text)
@@ -87,19 +91,19 @@ Create a user to be used by pgBouncer for authentication.  This user will only h
 - Install the helm chart (dry run first)
     ```
     helm install gke-bouncer --values values.yaml --dry-run --debug \
-    --version 1.22.1 --namespace=pgb-namespace \
+    --version 1.23.1 --namespace=pgb-namespace \
     [$HOME/pgbouncer-container/helm]
     ```
 - Install the helm chart
     ```
     helm install gke-bouncer --values values.yaml \
-    --version 1.22.1 --namespace=pgb-namespace \
+    --version 1.23.1 --namespace=pgb-namespace \
     [$HOME/pgbouncer-container/helm]
     ```
 - To upgrade the chart with a later version
     ```
     helm upgrade gke-bouncer --values values.yaml \
-    --version 1.22.1 --namespace=pgb-namespace \
+    --version 1.23.1 --namespace=pgb-namespace \
     [$HOME/pgbouncer-container/helm]
     ```
 
@@ -107,13 +111,15 @@ Create a user to be used by pgBouncer for authentication.  This user will only h
 Within the `values.yaml` file there is a section labeled `config:`.  This section contains the basic pgBouncer configuration.  You can place any valid configuration in this section, but it must be in .yaml format.  
 
 
-Currently the chart is set with the following default values.  Values the user should modify are in brackets (these brackets are not part of the yaml file and should not be included in the modifications).  However all should be modified according to user requirements:
+Currently the chart is set with the following default values.  Values the user should modify are in brackets (these brackets are not part of the yaml file and should not be included in the modifications).  Other parameters should be modified according to user requirements.
+
+The value for the userlist should contain the output from the public.lookup function for that particular user
 ```
 config:
-  adminUser: [pgbouncerAdmin]
-  adminPassword: ["Google54321!"]
+  adminUser: [pgbouncer_meta_user]
+  adminPassword: [Google5432111]
   authUser: [pgbouncer_auth_user]
-  authPassword: Google543211
+  authPassword: [Google543211]
   listen_addr: "*"
   listen_port: 5432
   databases:
@@ -147,6 +153,6 @@ config:
     max_prepared_statements: 200
     application_name_add_host: 1
   userlist:
-    test_user: "SCRAM-SHA-256$4096:wIiyxsACoIe3lyFlM8vqMgdFvE+FtmXhe1pBkH/Mkt4=$DB2aQSCTgL03/buI1oYt7MbrWK5tF1rYSx8/0MdQvhc=:H3nYnTbcuo6Bq6I2Fxj6BH/FUIM+VkIRXmy8o6qQrg8="
+    [test_user]: ["SCRAM-SHA-256$4096:wIiyxsACoIe3lyFlM8vqMgdFvE+FtmXhe1pBkH/Mkt4=$DB2aQSCTgL03/buI1oYt7MbrWK5tF1rYSx8/0MdQvhc=:H3nYnTbcuo6Bq6I2Fxj6BH/FUIM+VkIRXmy8o6qQrg8="]
 
 ```

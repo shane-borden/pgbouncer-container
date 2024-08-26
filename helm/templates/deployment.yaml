@@ -1,9 +1,9 @@
 apiVersion: {{ template "deployment.apiVersion" . }}
 kind: Deployment
 metadata:
-  name: {{ include "google-pgbouncer.fullname" . }}
+  name: {{ include "pgbouncer-container.fullname" . }}
   labels:
-    {{- include "google-pgbouncer.labels" . | nindent 4 }}
+    {{- include "pgbouncer-container.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
@@ -15,11 +15,11 @@ spec:
   {{ end -}}
   selector:
     matchLabels:
-      {{- include "google-pgbouncer.selectorLabels" . | nindent 6 }}
+      {{- include "pgbouncer-container.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "google-pgbouncer.selectorLabels" . | nindent 8 }}
+        {{- include "pgbouncer-container.selectorLabels" . | nindent 8 }}
         {{- if .Values.podLabels }}
         {{ range $key, $value := .Values.podLabels -}}
         {{ $key }}: {{ $value | quote }}
@@ -36,7 +36,7 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
-      serviceAccountName: {{ template "google-pgbouncer.serviceAccountName" . }}
+      serviceAccountName: {{ template "pgbouncer-container.serviceAccountName" . }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{ if .Values.nodeSelector -}}
       nodeSelector: {{ toYaml .Values.nodeSelector | trimSuffix "\n" | nindent 8 }}
@@ -61,7 +61,7 @@ spec:
       {{ end -}}
       containers:
       - name: {{ .Chart.Name }}
-        image: {{ template "google-pgbouncer.image" . }}
+        image: {{ template "pgbouncer-container.image" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         {{- if .Values.lifecycle }}
         lifecycle: {{ toYaml .Values.lifecycle | trimSuffix "\n" | nindent 10 }}
@@ -101,7 +101,7 @@ spec:
         {{- end }}
       {{- if .Values.pgbouncerExporter.enabled }}
       - name: gcp-pgbexporter
-        image: {{ template "google-pgbouncer.exporterImage" . }}
+        image: {{ template "pgbouncer-container.exporterImage" . }}
         imagePullPolicy: {{ .Values.pgbouncerExporter.image.pullPolicy }}
         args:
         - --web.listen-address=:{{ .Values.pgbouncerExporter.port }}
@@ -113,12 +113,12 @@ spec:
         - name: PGBOUNCER_USER
           valueFrom:
             secretKeyRef:
-              name: {{ template "google-pgbouncer.fullname" . }}-secret
+              name: {{ template "pgbouncer-container.fullname" . }}-secret
               key: adminUser
         - name: PGBOUNCER_PASS
           valueFrom:
             secretKeyRef:
-              name: {{ template "google-pgbouncer.fullname" . }}-secret
+              name: {{ template "pgbouncer-container.fullname" . }}-secret
               key: adminPassword
         {{- if .Values.pgbouncerExporter.resources }}
         resources: {{ toYaml .Values.pgbouncerExporter.resources | trimSuffix "\n" | nindent 10 }}
@@ -134,10 +134,10 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: {{ template "google-pgbouncer.fullname" . }}-configmap
+          name: {{ template "pgbouncer-container.fullname" . }}-configmap
       - name: userlist
         secret:
-          secretName: {{ template "google-pgbouncer.fullname" . }}-userlist-secret
+          secretName: {{ template "pgbouncer-container.fullname" . }}-userlist-secret
       {{- if .Values.extraVolumes -}}
       {{ toYaml .Values.extraVolumes | trimSuffix "\n" | nindent 6 }}
       {{ end -}}

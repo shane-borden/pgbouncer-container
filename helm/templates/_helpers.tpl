@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "google-pgbouncer.name" -}}
+{{- define "pgbouncer-container.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "google-pgbouncer.fullname" -}}
+{{- define "pgbouncer-container.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,21 +26,21 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "google-pgbouncer.chart" -}}
+{{- define "pgbouncer-container.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Create internal load balancer name.
 */}}
-{{- define "google-pgbouncer.ilb.name" -}}
+{{- define "pgbouncer-container.ilb.name" -}}
 {{- default "gcp-gke-bouncer-ilb" .Values.gkeLoadBalancer.loadBalancerName | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Create content for userlist.txt secret
 */}}
-{{- define "google-pgbouncer.secret.userlist" }}
+{{- define "pgbouncer-container.secret.userlist" }}
 {{ $sameUserCounter := 0 | int }}
 "{{ .Values.config.adminUser }}" "{{ required "A valid .Values.config.adminPassword entry required!" .Values.config.adminPassword }}"
 {{- range $key, $val := .Values.config.userlist }}
@@ -59,9 +59,9 @@ Create content for userlist.txt secret
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "google-pgbouncer.serviceAccountName" -}}
+{{- define "pgbouncer-container.serviceAccountName" -}}
 {{- if not .Values.serviceAccount.name -}}
-{{ template "google-pgbouncer.fullname" . }}
+{{ template "pgbouncer-container.fullname" . }}
 {{- else -}}
 {{- .Values.serviceAccount.name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
@@ -70,7 +70,7 @@ Create the name of the service account to use
 {{/*
 Contruct and return the image to use
 */}}
-{{- define "google-pgbouncer.image" -}}
+{{- define "pgbouncer-container.image" -}}
 {{- if not .Values.image.registry -}}
 {{ printf "%s:%s" .Values.image.repository .Values.image.tag }}
 {{- else -}}
@@ -81,7 +81,7 @@ Contruct and return the image to use
 {{/*
 Contruct and return the exporter image to use
 */}}
-{{- define "google-pgbouncer.exporterImage" -}}
+{{- define "pgbouncer-container.exporterImage" -}}
 {{- if not .Values.pgbouncerExporter.image.registry -}}
 {{ printf "%s:%s" .Values.pgbouncerExporter.image.repository .Values.pgbouncerExporter.image.tag }}
 {{- else -}}
@@ -92,12 +92,12 @@ Contruct and return the exporter image to use
 {{/*
 Common labels
 */}}
-{{- define "google-pgbouncer.labels" -}}
-helm.sh/chart: {{ include "google-pgbouncer.chart" . }}
+{{- define "pgbouncer-container.labels" -}}
+helm.sh/chart: {{ include "pgbouncer-container.chart" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
-app.kubernetes.io/name: {{ include "google-pgbouncer.name" . }}
+app.kubernetes.io/name: {{ include "pgbouncer-container.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
@@ -105,8 +105,8 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "google-pgbouncer.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "google-pgbouncer.name" . }}
+{{- define "pgbouncer-container.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "pgbouncer-container.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
