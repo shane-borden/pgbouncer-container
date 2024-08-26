@@ -1,4 +1,4 @@
-# docker build -t pgbouncer-container:1.22.0 --build-arg REPO_TAG=1.22.0 .
+# docker build -t pgbouncer-container:1.22.1 --build-arg REPO_TAG=1.22.1 .
 # This image is made to work with the related gke helm chart.
 # no config files exist because they are modified later
 
